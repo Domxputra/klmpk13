@@ -1,0 +1,7 @@
+id int primary key
+nama varchar(100)
+alamat text
+jk enum('laki_laki', 'prempuan')
+agama enum('islam', 'kristen', 'khatolik', 'hindu', budha)
+asl_sklh varchar
+tgl_lahir date
