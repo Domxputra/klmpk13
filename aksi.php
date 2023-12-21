@@ -1,51 +1,89 @@
 <?php
 include "koneksi.php";
-$query = "SELECT * FROM calon_siswa";
-$trx = mysqli_query($koneksi, $query);
+
+if (isset($_POST['simpan'])) {
+    $nama = $_POST['nama'];
+    $tgl_lahir = $_POST['tgl_lahir'];
+    $jk = $_POST['jk'];
+    $agama = $_POST['agama'];
+    $alamat = $_POST['alamat'];
+    $asl_sklh = $_POST['asl_sklh'];
+
+    $sql = "INSERT INTO calon_siswa(nama, tgl_lahir, jk, agama, alamat, asl_sklh) VALUES ('$nama', '$tgl_lahir', '$jk', '$agama', '$alamat', '$asl_sklh')";
+    $query = mysqli_query($koneksi, $sql);
+
+    if ($query) {
+        header("Location: daftar.php");
+    } else {
+        die("Gagal simpan data");
+    }
+} else {
+    die("Akses dilarang");
+}
+$data = array();
+if (isset($_POST['update'])) {
+    $id = $_POST['id'];
+    $nama = $_POST['nama'];
+    $tgl_lahir = $_POST['tgl_lahir'];
+    $jk = $_POST['jk'];
+    $agama = $_POST['agama'];
+    $alamat = $_POST['alamat'];
+    $asl_sklh = $_POST['asl_sklh'];
+
+    $sql = "UPDATE calon_siswa SET 
+            nama='$nama', 
+            tgl_lahir='$tgl_lahir', 
+            jk='$jk', 
+            agama='$agama', 
+            alamat='$alamat', 
+            asl_sklh='$asl_sklh' 
+            WHERE id=$id";
+
+    $query = mysqli_query($koneksi, $sql);
+
+    if ($query) {
+        header("Location: daftar.php");
+    } else {
+        die("Gagal update data: " . mysqli_error($koneksi));
+    }
+} elseif (isset($_GET['id'])) {
+    // Fetch existing data for editing
+    $id = $_GET['id'];
+    $result = mysqli_query($koneksi, "SELECT * FROM calon_siswa WHERE id=$id");
+
+    if ($result) {
+        $data = mysqli_fetch_assoc($result);
+    } else {
+        die("Gagal ambil data: " . mysqli_error($koneksi));
+    }
+} else {
+    die("Akses dilarang");
+}
+
+// Include your database connection file
+
+if (isset($_POST['hapus'])) {
+    $id = $_POST['id'];
+    $nama = $_POST['nama'];
+    $tgl_lahir = $_POST['tgl_lahir'];
+    $jk = $_POST['jk'];
+    $agama = $_POST['agama'];
+    $alamat = $_POST['alamat'];
+    $asl_sklh = $_POST['asl_sklh'];
+
+    // Perform the delete operation
+    $sql = "DELETE FROM calon_siswa WHERE id = $id";
+    $query = mysqli_query($koneksi, $sql);
+
+    if ($query) {
+        header("Location: daftar.php");
+        exit();
+    } else {
+        die("Gagal hapus data: " . mysqli_error($koneksi));
+    }
+} else {
+    die("Akses dilarang");
+}
+
+
 ?>
-<!DOCTYPE html>
-<html lang="en">
-<head>
-    <meta charset="UTF-8">
-    <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Daftar Siswa</title>
-    <link rel="stylesheet" href="style.css">
-</head>
-<body>
-    <h3>Siswa yang sudah mendaftar</h3>
-    <a href="tambah_siswa.php" class="button">[+] Tambah Baru</a>
-    <table>
-        <tr>
-            <th>No</th>
-            <th>Nama</th>
-            <th>Tanggal Lahir</th>
-            <th>Jenis Kelamin</th>
-            <th>Agama</th>
-            <th>Alamat</th>
-            <th>Asal Sekolah</th>
-            <th>Aksi</th>
-        </tr>
-        <?php
-        $no = 1;
-        while ($row = mysqli_fetch_assoc($trx)) :
-        ?>
-        <tr>
-            <td><?= $no ?></td>
-            <td><?= $row['nama'] ?></td>
-            <td><?= $row['tgl_lahir'] ?></td>
-            <td><?= $row['jk'] ?></td>
-            <td><?= $row['agama'] ?></td>
-            <td><?= $row['alamat'] ?></td>
-            <td><?= $row['asal_sekolah'] ?></td>
-            <td>
-                <a href="form_ubah_siswa.php?id=<?= $row['id'] ?>" class="button">Edit</a>
-                <a href="proses_hapus.php?id=<?= $row['id'] ?>" class="button" onclick="return confirm('Apakah akan menghapus?')">Hapus</a>
-            </td>
-        </tr>
-        <?php
-        $no++;
-        endwhile;
-        ?>
-    </table>
-</body>
-</html>
